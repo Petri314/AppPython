@@ -13,9 +13,9 @@ def obtener_horarios_turno(turno: str) -> tuple:
     if turno.lower() == "noche":
         return "22:00", "02:45", "03:15", "06:05"
     elif turno.lower() == "tarde":
-        return "14:00", "18:40", "19:10", "21:55"
+        return "14:10", "18:40", "19:10", "21:55"
     elif turno.lower() == "mañana":
-        return "06:35", "10:30", "11:00", "14:10"
+        return "06:40", "10:30", "11:00", "14:10"
     return None, None, None, None
 
 def procesar_excel(excel_file_path: str, sheet_name: str = "noche", turno: str = "Noche") -> List[Dict]:
@@ -96,9 +96,7 @@ def procesar_excel(excel_file_path: str, sheet_name: str = "noche", turno: str =
                                                         continue
                                                     break
 
-                                    apilador_str = " / ".join(apiladores_emparejados)
-                                    if " / " in apilador_str:
-                                        apilador_str = " \\/ ".join(apiladores_emparejados)
+                                    apilador_str = " \\/ ".join(apiladores_emparejados)
 
                                     camara = camaras_por_tarea.get(tarea_clave, "Desconocido")
                                     resultados_finales.append({
@@ -108,7 +106,7 @@ def procesar_excel(excel_file_path: str, sheet_name: str = "noche", turno: str =
                                         "Apilador": apilador_str,
                                         "Hora Inicio": hora_inicio,
                                         "Hora break inicio": hora_break_inicio,
-                                        "Hora break fin": hora_break_fin,
+                                        "Hora fin break": hora_break_fin,
                                         "Hora fin": hora_fin,
                                         "Pasillo": tarea_clave
                                     })
@@ -124,6 +122,7 @@ if __name__ == "__main__":
     turno_seleccionado = sys.argv[1].lower()
     excel_file = ""
     sheet_name = ""
+    nombre_archivo_json = f"resultados_{turno_seleccionado}.json"
 
     if turno_seleccionado == "noche":
         excel_file = "turnonoche.xlsx"
@@ -138,7 +137,10 @@ if __name__ == "__main__":
         print("Turno inválido. Debe ser 'noche', 'tarde' o 'mañana'")
         sys.exit(1)
 
+    print(f"--- TURNO {turno_seleccionado.upper()} ---")
     resultados = procesar_excel(excel_file, sheet_name=sheet_name, turno=turno_seleccionado)
-    resultados_json_str = json.dumps(resultados, indent=2, ensure_ascii=False)
-resultados_json_str = resultados_json_str.replace("\\\\/", "\\/")
-print(resultados_json_str)
+
+    with open(nombre_archivo_json, 'w', encoding='utf-8') as archivo_json:
+        json.dump(resultados, archivo_json, indent=2, ensure_ascii=False)
+
+    print(f"Los resultados han sido guardados en el archivo: {nombre_archivo_json}")
