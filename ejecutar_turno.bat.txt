@@ -1,0 +1,20 @@
+@echo off
+if "%1"=="mañana" goto mañana
+if "%1"=="tarde" goto tarde
+if "%1"=="noche" goto noche
+echo Uso: %0 (mañana^|tarde^|noche)
+goto fin
+
+:mañana
+python extractor.py mañana
+goto fin
+
+:tarde
+python extractor.py tarde
+goto fin
+
+:noche
+python extractor.py noche
+goto fin
+
+:fin
